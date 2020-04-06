@@ -1,0 +1,65 @@
+
+# trn_s1
+CUDA_VISIBLE_DEVICES=0 python main.py \
+    --model 'deeplabv3' --backbone 'resnet' \
+    --out-stride 16 --depth 50 \
+    --dataset 'S1S2' --nclass 10 \
+    --trn_ratio 0.01 --val_ratio 0.002 \
+    --bsz 256 --csz 224 --rsz 256 \
+    --oly-s1 --epochs 30 \
+    --start_epoch 0 --batch-size 8 \
+    --val-batch-size 8 --lr 1e-4 \
+    --eval-interval 1
+    
+# trn_S2
+CUDA_VISIBLE_DEVICES=2,3 python main.py \
+    --model 'unet' --backbone 'resnet' \
+    --out-stride 16 --depth 34 \
+    --dataset 'S1S2' --nclass 10 \
+    --trn_ratio 0.01 --val_ratio 0.005 \
+    --bsz 256 --csz 224 --rsz 256 \
+    --epochs 40 --start_epoch 0 \
+    --batch-size 16 --val-batch-size 16 \
+    --lr 1e-3 --eval-interval 1 \
+    --scale 'std' \
+    --aug 
+    
+    
+# pre
+CUDA_VISIBLE_DEVICES=2 python predict.py \
+    --model 'unet' --backbone 'resnet' \
+    --out-stride 16 --depth 34 \
+    --dataset 'val' \
+    --bsz 256 --csz 224 --rsz 256 \
+    --batch-size 1 --pre-batch-size 1 \
+    --scale 'std' \
+    --mode 'soft' \
+    --resume '/data/di.wang/ordinary/23DCNN/DataFusion2020/run/S1S2/unetresnet/e1_44/checkpoint.pth.tar' \
+    --dir '/data/di.wang/ordinary/23DCNN/DataFusion2020/pre/e1_44_val/' 
+    
+    
+# 38hao
+
+CUDA_VISIBLE_DEVICES=3 python main.py \
+    --model 'unet' --backbone 'resnet' \
+    --out-stride 16 --depth 34 \
+    --dataset 'S1S2' --nclass 10 \
+    --trn_ratio 0.005 --val_ratio 0.001 \
+    --bsz 256 --csz 224 --rsz 256 \
+    --epochs 40 --start_epoch 0 \
+    --batch-size 16 --val-batch-size 16 \
+    --lr 1e-3 --eval-interval 1 \
+    --rgb --scale 'std' \
+    --aug
+
+   
+ CUDA_VISIBLE_DEVICES=2 python predict.py \
+    --model 'unet' --backbone 'resnet' \
+    --out-stride 16 --depth 34 \
+    --dataset 'val' \
+    --bsz 256 --csz 224 --rsz 256 \
+    --batch-size 1 --pre-batch-size 1 \
+    --rgb --scale 'norm' \
+    --mode 'soft' \
+    --resume '/data/DW/ordinary/DRN_RCN/DataFusion2020_TRAD/run/S1S2/unetresnet/e1_47/checkpoint.pth.tar' \
+    --dir '/data/DW/ordinary/DRN_RCN/DataFusion2020_TRAD/pre/e1_47_val/' 
